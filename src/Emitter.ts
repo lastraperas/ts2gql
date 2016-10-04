@@ -108,14 +108,16 @@ export default class Emitter {
       return `input ${this._name(name)} {\n${this._indent(properties)}\n}`;
     }
 
+    const fragmentDeclaration = this._getDocTag(node, 'fragmentOn');
+    if (fragmentDeclaration) {
+      const fragmentType = fragmentDeclaration.split(' ')[1]
+      // console.log(fragmentType)
+      return `fragment ${this._name(name)} on ${fragmentType} {\n${this._indent(members.map((m:any) => m.name))}\n}`;
+    }
+    
+    let result = `interface ${this._name(name)} {\n${this._indent(properties)}\n}`;
     if (node.concrete) {
       return `type ${this._name(name)} {\n${this._indent(properties)}\n}`;
-    }
-
-    let result = `interface ${this._name(name)} {\n${this._indent(properties)}\n}`;
-    const fragmentDeclaration = this._getDocTag(node, 'fragment');
-    if (fragmentDeclaration) {
-      result = `${result}\n\n${fragmentDeclaration} {\n${this._indent(members.map((m:any) => m.name))}\n}`;
     }
 
     return result;
