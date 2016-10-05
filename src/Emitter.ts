@@ -2,6 +2,8 @@ import * as _ from 'lodash';
 
 import * as types from './types';
 
+import * as util from './util';
+
 // https://raw.githubusercontent.com/sogko/graphql-shorthand-notation-cheat-sheet/master/graphql-shorthand-notation-cheat-sheet.png
 export default class Emitter {
   renames:{[key:string]:string} = {};
@@ -96,7 +98,9 @@ export default class Emitter {
         const returnType = this._emitExpression(member.returns);
         return `${this._name(member.name)}${parameters}: ${returnType}`;
       } else if (member.type === 'property') {
-        return `${this._name(member.name)}: ${this._emitExpression(member.signature)}`;
+        let docs = (<types.ComplexNode>member.signature).documentation
+        const required = util.required(docs);
+        return `${this._name(member.name)}: ${this._emitExpression(member.signature)}${required}`;
       } else {
         throw new Error(`Can't serialize ${member.type} as a property of an interface`);
       }
@@ -132,7 +136,12 @@ export default class Emitter {
     } else if (node.type === 'string') {
       return 'String'; // TODO: ID annotation
     } else if (node.type === 'number') {
-      return 'Float'; // TODO: Int/Float annotation
+      let annotations:string[] = []
+      if(node.documentation) {
+        annotations = util.getAnnotationsFromDocs(node.documentation)
+      }
+      const type = _.includes(annotations, 'float')? 'Float': 'Int'
+      return type
     } else if (node.type === 'boolean') {
       return 'Boolean';
     } else if (node.type === 'reference') {
@@ -145,7 +154,9 @@ export default class Emitter {
           if (member.type !== 'property') {
             throw new Error(`Expected members of literal object to be properties; got ${member.type}`);
           }
-          return `${this._name(member.name)}: ${this._emitExpression(member.signature)}`;
+          let docs = (<types.ComplexNode>member.signature).documentation
+          const required = util.required(docs);
+          return `${this._name(member.name)}: ${this._emitExpression(member.signature)}${required}`;
         })
         .join(', ');
     } else {

@@ -139,11 +139,16 @@ export default class Collector {
   }
 
   _walkPropertySignature(node:typescript.PropertySignature):types.Node {
-    return {
-      type: 'property',
-      name: node.name.getText(),
-      signature: this._walkNode(node.type),
+    const result:types.Node = {
+        type: 'property',
+        name: node.name.getText(),
+        signature: this._walkNode(node.type),
     };
+    const documentation = util.documentationForNode(node)
+    if(documentation) {
+      (<types.ComplexNode>result.signature).documentation = util.documentationForNode(node);
+    }
+    return result;
   }
 
   _walkTypeReferenceNode(node:typescript.TypeReferenceNode):types.Node {

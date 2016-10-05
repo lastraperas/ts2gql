@@ -56,15 +56,15 @@ export interface LiteralObjectNode {
   members:Node[];
 }
 
-export interface StringNode {
+export interface StringNode extends ComplexNode {
   type:'string';
 }
 
-export interface NumberNode {
+export interface NumberNode extends ComplexNode {
   type:'number';
 }
 
-export interface BooleanNode {
+export interface BooleanNode extends ComplexNode {
   type:'boolean';
 }
 
