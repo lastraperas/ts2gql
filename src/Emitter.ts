@@ -111,7 +111,6 @@ export default class Emitter {
     const fragmentDeclaration = this._getDocTag(node, 'fragmentOn');
     if (fragmentDeclaration) {
       const fragmentType = fragmentDeclaration.split(' ')[1]
-      // console.log(fragmentType)
       return `fragment ${this._name(name)} on ${fragmentType} {\n${this._indent(members.map((m:any) => m.name))}\n}`;
     }
     
