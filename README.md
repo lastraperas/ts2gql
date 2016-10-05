@@ -12,6 +12,7 @@ Usage: `ts2gql root/module.ts`
 ```ts
 // Type aliases become GraphQL scalars.
 export type Url = string;
+export type Email = string;
 
 // If you want an explicit GraphQL ID type, you can do that too:
 /** @graphql ID */
@@ -55,6 +56,7 @@ export interface MutationRoot {
 // Don't forget to declare your schema and the root types!
 /** @graphql schema */
 export interface Schema {
+  schema: SchemaRoot;
   query: QueryRoot;
   mutation: MutationRoot;
 }
@@ -67,6 +69,12 @@ export interface EmailRecipients {
   email:Email
 }
 
+// If you have input objects (http://dev.apollodata.com/core/fragments.html)
+/** @graphql fragmentOn Post*/
+export interface PostTitle {
+  title: string
+}
+
 // You may also wish to expose some GraphQL specific fields or parameterized
 // calls on particular types, while still preserving the shape of your
 // interfaces for more general use:
@@ -75,12 +83,55 @@ export interface CategoryOverrides {
   // for example, we may want to be able to filter or paginate posts:
   posts(args: {authorId:Id}): Post[]
 }
+
+
+// Force input and fragments reference
+// to generate output
+export interface Fragments {
+  postTitle: PostTitle
+}
+
+export interface Inputs {
+  emailRecipients: EmailRecipients
+}
+
+export interface SchemaRoot {
+  inputs: Inputs
+  fragments: Fragments
+}
+
+
 ```
 
 ```
 > ts2gql input.ts
 
 scalar Date
+
+scalar Email
+
+input EmailRecipients {
+  email: Email
+  name: String
+  type: String
+}
+
+type Inputs {
+  emailRecipients: EmailRecipients
+}
+
+fragment PostTitle on Post {
+  title
+}
+
+type Fragments {
+  postTitle: PostTitle
+}
+
+type SchemaRoot {
+  fragments: Fragments
+  inputs: Inputs
+}
 
 scalar Url
 
@@ -122,6 +173,7 @@ type MutationRoot {
 schema {
   mutation: MutationRoot
   query: QueryRoot
+  schema: SchemaRoot
 }
 
 ```
