@@ -13,7 +13,8 @@ const TypeFlags = typescript.TypeFlags;
  */
 export default class Collector {
   types:types.TypeMap = {
-    Date: {type: 'alias', target: {type: 'string'}},
+    // Date: {type: 'alias', target: {type: 'string'}},
+    DateTime: {type: 'alias', target: {type: 'string'}}
   };
   private checker:typescript.TypeChecker;
   private nodeMap:Map<typescript.Node, types.Node> = new Map;
@@ -130,15 +131,17 @@ export default class Collector {
     for (const parameter of signature.getParameters()) {
       const parameterNode = <typescript.ParameterDeclaration>parameter.valueDeclaration;
       const argsNode = this._walkNode(parameterNode.type);
-      _.map((<any>argsNode).members, (paramDef:any) => {
-        let paramDoc = _.find(docs.tags, (p:any) => p.name === paramDef.name)
-        if(paramDoc) {
-          paramDoc = _.omit(paramDoc, ['name'])
-          paramDef.signature.documentation = {
-            tags: [paramDoc]
+      if(docs && docs.tags) {
+        _.map((<any>argsNode).members, (paramDef:any) => {
+          let paramDoc = _.find(docs.tags, (p:any) => p.name === paramDef.name)
+          if(paramDoc) {
+            paramDoc = _.omit(paramDoc, ['name'])
+            paramDef.signature.documentation = {
+              tags: [paramDoc]
+            }
           }
-        }
-      })
+        })
+      }
       parameters[parameter.getName()] = argsNode
     }
     
