@@ -126,6 +126,7 @@ export default class Collector {
     const signature = this.checker.getSignatureFromDeclaration(node);
     const parameters:types.TypeMap = {};
     const docs = util.documentationForNode(signature.declaration)
+    
     for (const parameter of signature.getParameters()) {
       const parameterNode = <typescript.ParameterDeclaration>parameter.valueDeclaration;
       const argsNode = this._walkNode(parameterNode.type);
@@ -138,17 +139,9 @@ export default class Collector {
           }
         }
       })
-      // console.log('args',argsNode)
-      // console.log('docs',docs)
       parameters[parameter.getName()] = argsNode
     }
     
-    
-  
-    // const documentation = util.documentationForNode(node)
-    // if(documentation) {
-    //   console.log('aaaa', node:typescript.MethodSignature)
-    // }
     return {
       type: 'method',
       name: node.name.getText(),
