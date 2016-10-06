@@ -16,9 +16,16 @@ export function documentationForNode(node:typescript.Node, source?:string):doctr
 export function getAnnotationsFromDocs(docs:doctrine.ParseResult):string[] {
   let annotations = []
   if(docs && docs.tags) {
-    _.map(docs.tags, (t) => {
+    _.map(docs.tags, (t:any, i) => {
       if(t.title === 'graphql') {
         annotations = _.union(annotations, t.description.split(' '))
+      }
+      if(t.title === 'param') {
+        if(t.type.type === 'NameExpression') {
+          annotations = [t.type.name]
+        } else if(t.type.type === 'ArrayType') {
+          annotations = _.map(t.type.elements, (e:any) => e.name)
+        }
       }
     })
   }

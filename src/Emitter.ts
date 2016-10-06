@@ -93,6 +93,7 @@ export default class Emitter {
         if (_.size(member.parameters) > 1) {
           throw new Error(`Methods can have a maximum of 1 argument`);
         } else if (_.size(member.parameters) === 1) {
+          // console.log(JSON.stringify(<types.Node>_.values(member.parameters)[0],null,4))
           parameters = `(${this._emitExpression(<types.Node>_.values(member.parameters)[0])})`;
         }
         const returnType = this._emitExpression(member.returns);
