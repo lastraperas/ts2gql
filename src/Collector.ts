@@ -133,6 +133,22 @@ export default class Collector {
       const argsNode = this._walkNode(parameterNode.type);
       if(docs && docs.tags) {
         _.map((<any>argsNode).members, (paramDef:any) => {
+          _.map(docs.tags, (p:any) => {
+            if(p.title === 'required' || p.title === 'float') {
+              const params = p.description && p.description.split(' ')
+              if(_.includes(params,  paramDef.name)) {
+                paramDef.signature.documentation = {
+                  tags: [{
+                    title: 'param',
+                    description: null,
+                    type: { type: 'NameExpression', name: p.title },
+                    name: paramDef.name
+                  }]
+                }
+              }
+            }
+          })
+          
           let paramDoc = _.find(docs.tags, (p:any) => p.name === paramDef.name)
           if(paramDoc) {
             paramDoc = _.omit(paramDoc, ['name'])

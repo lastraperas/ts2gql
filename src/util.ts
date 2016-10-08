@@ -27,6 +27,9 @@ export function getAnnotationsFromDocs(docs:doctrine.ParseResult):string[] {
           annotations = _.map(t.type.elements, (e:any) => e.name)
         }
       }
+      if(t.title === 'required' || t.title === 'float') {
+        annotations = [t.title]
+      }
     })
   }
   return annotations
